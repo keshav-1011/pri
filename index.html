@@ -150,10 +150,20 @@ function startMusic(){
 }
 function toggleMusic(){
   startMusic();
-  if(isMuted){ music.muted=false; isMuted=false; musicBtn.innerText="🎵"; }
-  else{ music.muted=true; isMuted=true; musicBtn.innerText="🔇"; }
+  if(isMuted){ 
+    music.muted=false; 
+    isMuted=false; 
+    musicBtn.innerText="🎵"; 
+  } else { 
+    music.muted=true; 
+    isMuted=true; 
+    musicBtn.innerText="🔇"; 
+  }
 }
+
+/* Add both click and touchstart for mobile autoplay */
 document.addEventListener('click', startMusic, {once:true});
+document.addEventListener('touchstart', startMusic, {once:true});
 music.addEventListener('ended', ()=>{music.currentTime=0; music.play();});
 
 /* FLOATING HEARTS */
@@ -192,7 +202,7 @@ function photos(){
     slideIndex++; 
     if(slideIndex>totalSlides) slideIndex=1;
     img.src=`photo${slideIndex}.jpeg`;
-  },6000); // each photo 8 sec
+  },8000); 
 }
 
 /* MINI COUNTDOWN */
