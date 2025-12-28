@@ -114,6 +114,12 @@ canvas{
   cursor:pointer;
   z-index:10;
 }
+#musicHint{
+  text-align:center;
+  font-size:12px;
+  color:#444;
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
@@ -121,7 +127,7 @@ canvas{
 <audio id="bgMusic" loop>
   <source src="love_song.mp3" type="audio/mpeg">
 </audio>
-<button id="musicBtn" onclick="toggleMusic()">🎵</button>
+<button id="musicBtn">🎵</button>
 
 <canvas id="fireworks"></canvas>
 <div id="miniCountdown"></div>
@@ -139,32 +145,21 @@ canvas{
 const content=document.getElementById("content");
 const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
-let isMuted=false, started=false;
+let isMuted=false;
 
-/* MUSIC FUNCTIONS */
-function startMusic(){
-  if(!started){
-    music.play().catch(()=>{}); 
-    started=true;
-  }
-}
-function toggleMusic(){
-  startMusic();
-  if(isMuted){ 
-    music.muted=false; 
-    isMuted=false; 
-    musicBtn.innerText="🎵"; 
-  } else { 
-    music.muted=true; 
-    isMuted=true; 
-    musicBtn.innerText="🔇"; 
-  }
-}
-
-/* Add both click and touchstart for mobile autoplay */
-document.addEventListener('click', startMusic, {once:true});
-document.addEventListener('touchstart', startMusic, {once:true});
-music.addEventListener('ended', ()=>{music.currentTime=0; music.play();});
+/* MUSIC - only play on direct button tap */
+musicBtn.addEventListener('click', ()=>{
+    music.play().catch(()=>{});
+    if(isMuted){
+        music.muted=false;
+        isMuted=false;
+        musicBtn.innerText="🎵";
+    } else {
+        music.muted=true;
+        isMuted=true;
+        musicBtn.innerText="🔇";
+    }
+});
 
 /* FLOATING HEARTS */
 function spawnHeart(){
