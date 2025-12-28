@@ -114,12 +114,6 @@ canvas{
   cursor:pointer;
   z-index:10;
 }
-#musicHint{
-  text-align:center;
-  font-size:12px;
-  color:#444;
-  margin-top:8px;
-}
 </style>
 </head>
 <body>
@@ -147,9 +141,9 @@ const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
 let isMuted=false;
 
-/* MUSIC - only play on direct button tap */
+/* MUSIC - mobile-friendly: play only on button tap */
 musicBtn.addEventListener('click', ()=>{
-    music.play().catch(()=>{});
+    music.play().catch(()=>{}); // ensures mobile works
     if(isMuted){
         music.muted=false;
         isMuted=false;
@@ -197,7 +191,7 @@ function photos(){
     slideIndex++; 
     if(slideIndex>totalSlides) slideIndex=1;
     img.src=`photo${slideIndex}.jpeg`;
-  },5000); 
+  },8000); 
 }
 
 /* MINI COUNTDOWN */
