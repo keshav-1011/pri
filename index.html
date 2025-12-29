@@ -15,6 +15,7 @@ body{
   height:100vh;
   overflow:hidden;
   position:relative;
+  transition:background 1.5s ease;
 }
 
 /* subtle pulsing of main card */
@@ -104,6 +105,20 @@ button:hover{
   100%{transform:translateY(-80vh) translateX(-20px);}
 }
 
+/* surprise emoji pop */
+.surprise-emoji{
+  position:fixed;
+  font-size:40px;
+  z-index:20;
+  pointer-events:none;
+  animation:emojiPop .7s ease-out forwards;
+}
+@keyframes emojiPop{
+  0%{transform:scale(0) translateY(20px);opacity:0;}
+  40%{transform:scale(1.3) translateY(-10px);opacity:1;}
+  100%{transform:scale(0.8) translateY(-40px);opacity:0;}
+}
+
 #miniCountdown{
   position:fixed;
   top:12px;
@@ -186,6 +201,57 @@ canvas{
   0%{opacity:1;transform:translateY(0) scale(1);}
   100%{opacity:0;transform:translateY(-20px) scale(.2);}
 }
+
+/* visualizer canvas */
+#visualizer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100vw;
+  height:60px;
+  pointer-events:none;
+  z-index:3;
+}
+
+/* meteors on pink bg */
+.meteor{
+  position:fixed;
+  width:80px;
+  height:2px;
+  background:linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0));
+  opacity:0.8;
+  transform:rotate(-35deg);
+  pointer-events:none;
+  z-index:0;
+  animation:meteorMove 1.4s linear forwards;
+}
+@keyframes meteorMove{
+  0%{transform:translate(0,0) rotate(-35deg);opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translate(-40vw,40vh) rotate(-35deg);opacity:0;}
+}
+
+/* Night sky for final scene */
+.night-sky{
+  background:radial-gradient(circle at top,#1b1b3a 0%,#050514 60%,#000 100%);
+}
+
+/* stars for name */
+.star-dot{
+  position:fixed;
+  width:2px;
+  height:2px;
+  background:white;
+  border-radius:50%;
+  opacity:0;
+  animation:starBlink 2.5s ease-in-out forwards;
+  z-index:0;
+}
+@keyframes starBlink{
+  0%{opacity:0;}
+  25%{opacity:1;}
+  100%{opacity:0;}
+}
 </style>
 </head>
 <body>
@@ -199,6 +265,7 @@ canvas{
 <div id="unicorn">🦄</div>
 
 <canvas id="fireworks"></canvas>
+<canvas id="visualizer"></canvas>
 <div id="miniCountdown"></div>
 
 <div class="card" id="content">
@@ -218,7 +285,7 @@ let isMuted=false;
 
 /* MUSIC - mobile-friendly */
 musicBtn.addEventListener('click', ()=>{
-    music.play().catch(()=>{});
+    music.play().then(()=>setupVisualizer()).catch(()=>{});
     if(isMuted){
         music.muted=false;
         isMuted=false;
@@ -256,7 +323,7 @@ function spawnBgHeart(){
 }
 setInterval(spawnBgHeart,1200);
 
-/* small sparkles randomly */
+/* small sparkles randomly around card */
 function spawnSparkle(x,y){
   const s=document.createElement("div");
   s.className="sparkle";
@@ -273,13 +340,40 @@ setInterval(()=>{
   spawnSparkle(x,y);
 },800);
 
+/* surprise emoji pop */
+function popEmoji(x,y,emoji="😍"){
+  const e=document.createElement("div");
+  e.className="surprise-emoji";
+  e.textContent=emoji;
+  e.style.left=x+"px";
+  e.style.top=y+"px";
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),700);
+}
+
 /* FLOW SLIDES */
-function yes1(){content.innerHTML=`<div class="emoji">🥰</div><h1>Good choice 😌</h1><p>When was our first kiss? 💋</p><button onclick="wrong()">I forgot 😐</button><button onclick="kiss()">Nov 10 ❤️</button>`;}
-function no1(){content.innerHTML=`<div class="emoji">😤</div><h1>Excuse me??</h1><p>Go back and press YES 😑</p><button onclick="yes1()">Okay okay 😌</button>`;}
-function wrong(){content.innerHTML=`<div class="emoji">🤦‍♂️</div><h1>You don’t know me 😤</h1><p>Try again</p><button onclick="yes1()">Retry</button>`;}
-function kiss(){content.innerHTML=`<div class="emoji">💋</div><h1>Correct ❤️</h1><p>Nov 10 🎂 — best gift was YOU</p><p><b>What do you find most attractive in me?</b></p><button onclick="wrong()">my hair 😂</button><button onclick="future()">Me ❤️</button>`;}
-function future(){content.innerHTML=`<div class="emoji">🥹</div><h1>Aww…</h1><p><b>Do you see a future with me?</b></p><button onclick="lookHarder()">No 🤔</button><button onclick="photos()">Yes 💍</button>`;}
-function lookHarder(){content.innerHTML=`<div class="emoji">👀</div><h1>Look harder.</h1><p>I’m right here holding our future ❤️</p><button onclick="photos()">Okay yes 🥹</button>`;}
+function yes1(){
+  content.innerHTML=`<div class="emoji">🥰</div><h1>Good choice 😌</h1><p>When was our first kiss? 💋</p><button onclick="wrong()">I forgot 😐</button><button onclick="kiss()">Nov 10 ❤️</button>`;
+}
+function no1(){
+  content.innerHTML=`<div class="emoji">😤</div><h1>Excuse me??</h1><p>Go back and press YES 😑</p><button onclick="yes1()">Okay okay 😌</button>`;
+}
+function wrong(){
+  content.innerHTML=`<div class="emoji">🤦‍♂️</div><h1>You don’t know me 😤</h1><p>Try again</p><button onclick="yes1()">Retry</button>`;
+}
+function kiss(){
+  const rect=content.getBoundingClientRect();
+  popEmoji(rect.left+rect.width/2, rect.top+40, "😘");
+  content.innerHTML=`<div class="emoji">💋</div><h1>Correct ❤️</h1><p>Nov 10 🎂 — best gift was YOU</p><p><b>What do you find most attractive in me?</b></p><button onclick="wrong()">my hair 😂</button><button onclick="future()">Me ❤️</button>`;
+}
+function future(){
+  const rect=content.getBoundingClientRect();
+  popEmoji(rect.left+rect.width/2, rect.top+40, "🥹");
+  content.innerHTML=`<div class="emoji">🥹</div><h1>Aww…</h1><p><b>Do you see a future with me?</b></p><button onclick="lookHarder()">No 🤔</button><button onclick="photos()">Yes 💍</button>`;
+}
+function lookHarder(){
+  content.innerHTML=`<div class="emoji">👀</div><h1>Look harder.</h1><p>I’m right here holding our future ❤️</p><button onclick="photos()">Okay yes 🥹</button>`;
+}
 
 /* SLIDESHOW */
 function photos(){
@@ -369,7 +463,6 @@ function aiMove(){
   const empties=board.map((v,i)=>v==""?i:null).filter(v=>v!=null);
   if(move===null && empties.length) move = empties[Math.floor(Math.random()*empties.length)];
 
-  // do move
   if(move!=null) play(move);
 }
 
@@ -415,10 +508,55 @@ function startCountdown(){
 
 /* FOREVER QUESTION */
 function forever(){
+  const rect=content.getBoundingClientRect();
+  popEmoji(rect.left+rect.width/2, rect.top+40, "💍");
   content.innerHTML=`<div class="emoji">💍</div><h1>One last question…</h1><p><b>Will you be mine forever?</b></p><button onclick="finalYes()">Yes ❤️</button><button onclick="wrong()">Hmm 🤔</button>`;
 }
+
+/* star name "Sampritha" */
+function drawNameStars(){
+  const points=[
+    // S
+    {x:20,y:20},{x:24,y:20},{x:28,y:22},{x:24,y:24},{x:20,y:26},{x:24,y:28},
+    // a
+    {x:34,y:24},{x:36,y:22},{x:38,y:24},{x:36,y:26},
+    // m
+    {x:44,y:26},{x:44,y:22},{x:46,y:24},{x:48,y:22},{x:48,y:26},
+    // p
+    {x:54,y:26},{x:54,y:22},{x:56,y:22},{x:56,y:24},
+    // r
+    {x:62,y:26},{x:62,y:22},{x:64,y:22},
+    // i
+    {x:70,y:22},{x:70,y:26},
+    // t
+    {x:76,y:22},{x:78,y:22},{x:77,y:24},{x:77,y:26},
+    // h
+    {x:84,y:26},{x:84,y:22},{x:86,y:24},{x:88,y:22},{x:88,y:26},
+    // a
+    {x:94,y:24},{x:96,y:22},{x:98,y:24},{x:96,y:26}
+  ];
+  const w=window.innerWidth;
+  const h=window.innerHeight;
+  points.forEach((p,i)=>{
+    const s=document.createElement("div");
+    s.className="star-dot";
+    s.style.left=(w*(p.x/120))+"px";
+    s.style.top=(h*0.25 + h*(p.y/200))+"px";
+    s.style.animationDelay=(i*0.08)+"s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),3500);
+  });
+}
+
+/* FINAL YES */
 function finalYes(){
-  content.innerHTML=`<div class="emoji">🎆💖</div><h1>I love you Sampritha</h1><p>Today ❤️ Tomorrow 💫 Forever 💍</p>`;
+  const rect=content.getBoundingClientRect();
+  popEmoji(rect.left+rect.width/2, rect.top+40, "💖");
+  document.body.classList.add("night-sky");
+  content.innerHTML=`<div class="emoji">🌙💖</div>
+  <h1>I love you Sampritha</h1>
+  <p>Today ❤️ Tomorrow 💫 Forever 💍</p>`;
+  drawNameStars();
   startFireworks();
 }
 
@@ -433,6 +571,7 @@ let gravity=0.03;
 window.addEventListener("resize",()=>{
   canvas.width=innerWidth;
   canvas.height=innerHeight;
+  visCanvas.width=innerWidth;
 });
 
 function startFireworks(){
@@ -450,8 +589,7 @@ function startFireworks(){
         dy:Math.sin(angle)*speed,
         life:90+Math.random()*40,
         maxLife:90+Math.random()*40,
-        hue:hue,
-        trail:true
+        hue:hue
       });
     }
   },700); 
@@ -460,18 +598,16 @@ function startFireworks(){
 
 function animateFireworks(){
   requestAnimationFrame(animateFireworks);
-  ctx.fillStyle="rgba(0,0,0,0)";
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   particles.forEach((p,i)=>{
-    // rainbow color
     const alpha = p.life/p.maxLife;
     ctx.beginPath();
     ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
     ctx.fillStyle=`hsla(${p.hue},100%,60%,${alpha})`;
     ctx.fill();
 
-    // falling sparks (like glitter rain)
+    // falling sparks
     if(Math.random()<0.14){
       ctx.beginPath();
       ctx.arc(p.x, p.y+3+Math.random()*4, 1.5, 0, Math.PI*2);
@@ -485,6 +621,58 @@ function animateFireworks(){
     p.life--;
     if(p.life<=0) particles.splice(i,1);
   });
+}
+
+/* MUSIC VISUALIZER BARS */
+const visCanvas=document.getElementById("visualizer");
+const vctx=visCanvas.getContext("2d");
+visCanvas.width=innerWidth;
+visCanvas.height=60;
+
+let audioCtx, analyser, dataArray, sourceNode, visStarted=false;
+
+function setupVisualizer(){
+  if(visStarted) return;
+  visStarted=true;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  sourceNode = audioCtx.createMediaElementSource(music);
+  sourceNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize=64;
+  const bufferLength=analyser.frequencyBinCount;
+  dataArray=new Uint8Array(bufferLength);
+  drawBars(bufferLength);
+}
+
+function drawBars(bufferLength){
+  requestAnimationFrame(()=>drawBars(bufferLength));
+  if(!analyser) return;
+  analyser.getByteFrequencyData(dataArray);
+  vctx.clearRect(0,0,visCanvas.width,visCanvas.height);
+  const barWidth = visCanvas.width / bufferLength;
+  for(let i=0;i<bufferLength;i++){
+    const v=dataArray[i]/255;
+    const h= v*visCanvas.height;
+    const x=i*barWidth;
+    const pastelColors=["#ffc6ff","#ffafcc","#bde0fe","#caffbf","#fdffb6"];
+    const c=pastelColors[i%pastelColors.length];
+    vctx.fillStyle=c;
+    vctx.fillRect(x,visCanvas.height-h, barWidth*0.7, h);
+  }
+}
+
+/* METEOR SHOWER (only on pink bg, not night sky) */
+let meteorTimer=setInterval(spawnMeteor,1800);
+
+function spawnMeteor(){
+  if(document.body.classList.contains("night-sky")) return;
+  const m=document.createElement("div");
+  m.className="meteor";
+  m.style.top=(Math.random()*40)+"vh";
+  m.style.left=(60+Math.random()*40)+"vw";
+  document.body.appendChild(m);
+  setTimeout(()=>m.remove(),1500);
 }
 </script>
 </body>
