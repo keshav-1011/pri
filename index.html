@@ -21,12 +21,12 @@ body{
   background:white;
   width:90%;
   max-width:420px;
-  padding:25px;
-  border-radius:20px;
+  padding:26px;
+  border-radius:22px;
   text-align:center;
-  box-shadow:0 20px 40px rgba(0,0,0,.2);
+  box-shadow:0 20px 45px rgba(0,0,0,.25);
   animation:breathing 6s ease-in-out infinite;
-  position:relative;
+  z-index:2;
 }
 
 @keyframes breathing{
@@ -35,7 +35,7 @@ body{
 }
 
 h1{color:#ff4d6d}
-p{color:#444}
+p{color:#444;font-size:15px}
 
 button{
   margin:10px;
@@ -53,13 +53,31 @@ button.secondary{
 }
 
 .glow{
-  text-shadow:0 0 12px rgba(255,77,109,.8);
-  animation:pulse 1.5s infinite;
+  text-shadow:0 0 16px rgba(255,77,109,.9);
+  animation:pulse 1.6s infinite;
 }
 
 @keyframes pulse{
   0%,100%{opacity:1}
   50%{opacity:.7}
+}
+
+/* Music button */
+#musicBtn{
+  position:fixed;
+  top:15px;
+  right:15px;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  box-shadow:0 10px 20px rgba(0,0,0,.25);
+  cursor:pointer;
+  z-index:10;
 }
 
 /* Tic Tac Toe */
@@ -74,7 +92,7 @@ button.secondary{
   width:80px;
   height:80px;
   background:#ffe4ea;
-  border-radius:12px;
+  border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -87,7 +105,6 @@ button.secondary{
   position:fixed;
   width:8px;
   height:8px;
-  background:red;
   animation:fall 3s linear forwards;
 }
 @keyframes fall{
@@ -98,22 +115,61 @@ button.secondary{
 
 <body>
 
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="love_song.mp3" type="audio/mpeg">
+</audio>
+
+<div id="musicBtn" onclick="toggleMusic()">🎵</div>
+
 <div class="card" id="card">
   <h1 class="glow">Hey Sampritha 💕</h1>
-  <p>Ready for a tiny cute game?</p>
-  <button onclick="next()">Start</button>
+  <p>I made something special for you…</p>
+  <button onclick="startExperience()">Start 💖</button>
 </div>
 
 <script>
 let step=0;
 const card=document.getElementById("card");
+const music=document.getElementById("bgMusic");
+const musicBtn=document.getElementById("musicBtn");
+let playing=false;
 
+/* MUSIC AUTO-PLAY ON FIRST TAP */
+function startMusic(){
+  if(!playing){
+    music.volume=0;
+    music.play().then(()=>{
+      playing=true;
+      musicBtn.innerHTML="⏸️";
+      let v=0;
+      let fade=setInterval(()=>{
+        v+=0.05;
+        music.volume=Math.min(v,1);
+        if(v>=1) clearInterval(fade);
+      },150);
+    }).catch(()=>{});
+  }
+}
+
+function toggleMusic(){
+  if(!playing){
+    startMusic();
+  }else{
+    music.pause();
+    playing=false;
+    musicBtn.innerHTML="🎵";
+  }
+}
+
+/* VIBRATION */
 function vibrate(){
   if(navigator.vibrate) navigator.vibrate(40);
 }
 
+/* CONFETTI */
 function confetti(){
-  for(let i=0;i<40;i++){
+  for(let i=0;i<45;i++){
     let c=document.createElement("div");
     c.className="confetti";
     c.style.left=Math.random()*100+"vw";
@@ -123,15 +179,20 @@ function confetti(){
   }
 }
 
+/* FLOW */
+function startExperience(){
+  startMusic();
+  next();
+}
+
 function next(){
   vibrate();
   step++;
 
-  /* QUESTIONS FLOW */
   if(step===1){
     card.innerHTML=`
-      <h1>Question 1 💖</h1>
-      <p>Who makes you smile the most?</p>
+      <h1>First Question 💗</h1>
+      <p>Who makes your heart happiest?</p>
       <button onclick="correct()">You 😌</button>
       <button onclick="correct()">Us 💕</button>
     `;
@@ -139,8 +200,8 @@ function next(){
 
   else if(step===2){
     card.innerHTML=`
-      <h1>Question 2 🥹</h1>
-      <p>What do I love most?</p>
+      <h1>Be honest 🥹</h1>
+      <p>What do I love the most?</p>
       <button onclick="correct()">Your smile</button>
       <button onclick="correct()">Everything about you</button>
     `;
@@ -153,27 +214,25 @@ function next(){
   else if(step===4){
     card.innerHTML=`
       <h1 class="glow">One last thing ❤️</h1>
-      <p>Will you always be mine?</p>
+      <p>Will you be mine forever?</p>
       <button onclick="finalYes()">YES 💍</button>
       <button onclick="finalYes()">ALWAYS ♾️</button>
     `;
   }
 }
 
-/* Correct answer handler */
 function correct(){
   confetti();
   next();
 }
 
-/* TIC TAC TOE (NON-BLOCKING) */
+/* TIC TAC TOE */
 function ticTacToe(){
-  let board=["","","","","","","","",""];
   card.innerHTML=`
     <h1>Tic Tac Toe 🎮</h1>
-    <p>You are ❌ — I am ⭕</p>
+    <p>You ❌ &nbsp; Me ⭕</p>
     <div class="grid">
-      ${board.map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}
+      ${Array(9).fill("").map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}
     </div>
     <button onclick="next()">Next ➡️</button>
     <button class="secondary" onclick="ticTacToe()">Replay 🔄</button>
