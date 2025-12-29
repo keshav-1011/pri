@@ -16,6 +16,13 @@ body{
   overflow:hidden;
   position:relative;
 }
+
+/* subtle pulsing of main card */
+@keyframes cardPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.02);}
+}
+
 .card{
   background:white;
   border-radius:22px;
@@ -25,6 +32,8 @@ body{
   box-shadow:0 15px 40px rgba(0,0,0,.2);
   text-align:center;
   z-index:2;
+  position:relative;
+  animation:cardPulse 3.5s ease-in-out infinite;
 }
 h1{color:#ff4d6d}
 p{color:#444;font-size:15px}
@@ -37,8 +46,12 @@ button{
   color:white;
   font-size:15px;
   cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
 }
-button:hover{transform:scale(1.05)}
+button:hover{
+  transform:scale(1.05) translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,.18);
+}
 .emoji{font-size:36px;margin-bottom:10px}
 .image-frame{
   width:100%;
@@ -56,16 +69,41 @@ button:hover{transform:scale(1.05)}
   max-height:100%;
   object-fit:contain;
 }
+
+/* FLOATING HEARTS – from bottom to top */
 .heart{
   position:fixed;
   font-size:18px;
   animation:floatUp 6s linear infinite;
   z-index:1;
+  bottom:-40px;
 }
 @keyframes floatUp{
-  from{transform:translateY(100vh);opacity:1;}
-  to{transform:translateY(-10vh);opacity:0;}
+  0%{
+    transform:translateY(0);
+    opacity:0;
+  }
+  10%{opacity:1;}
+  100%{
+    transform:translateY(-110vh);
+    opacity:0;
+  }
 }
+
+/* soft background hearts behind everything */
+.bg-heart{
+  position:fixed;
+  font-size:26px;
+  opacity:.18;
+  animation:bgFloat 16s linear infinite;
+  z-index:0;
+}
+@keyframes bgFloat{
+  0%{transform:translateY(0) translateX(0);}
+  50%{transform:translateY(-40vh) translateX(40px);}
+  100%{transform:translateY(-80vh) translateX(-20px);}
+}
+
 #miniCountdown{
   position:fixed;
   top:12px;
@@ -96,6 +134,11 @@ button:hover{transform:scale(1.05)}
   justify-content:center;
   align-items:center;
   cursor:pointer;
+  transition:background .2s, transform .1s;
+}
+.cell:hover{
+  background:#ffc2d0;
+  transform:translateY(-2px);
 }
 canvas{
   position:fixed;
@@ -114,6 +157,35 @@ canvas{
   cursor:pointer;
   z-index:10;
 }
+
+/* UNICORN AROUND CARD */
+#unicorn{
+  position:fixed;
+  font-size:40px;
+  z-index:1;
+  pointer-events:none;
+  animation:unicornJump 8s linear infinite;
+}
+@keyframes unicornJump{
+  0%{transform:translate(-60vw,20vh);}
+  25%{transform:translate(0vw,-5vh);}
+  50%{transform:translate(40vw,15vh);}
+  75%{transform:translate(0vw,35vh);}
+  100%{transform:translate(-60vw,20vh);}
+}
+
+/* little sparkle stars */
+.sparkle{
+  position:fixed;
+  color:#fff;
+  font-size:12px;
+  animation:spark 1.4s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes spark{
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-20px) scale(.2);}
+}
 </style>
 </head>
 <body>
@@ -122,6 +194,9 @@ canvas{
   <source src="love_song.mp3" type="audio/mpeg">
 </audio>
 <button id="musicBtn">🎵</button>
+
+<!-- Unicorn -->
+<div id="unicorn">🦄</div>
 
 <canvas id="fireworks"></canvas>
 <div id="miniCountdown"></div>
@@ -141,9 +216,9 @@ const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
 let isMuted=false;
 
-/* MUSIC - mobile-friendly: play only on button tap */
+/* MUSIC - mobile-friendly */
 musicBtn.addEventListener('click', ()=>{
-    music.play().catch(()=>{}); // ensures mobile works
+    music.play().catch(()=>{});
     if(isMuted){
         music.muted=false;
         isMuted=false;
@@ -155,17 +230,48 @@ musicBtn.addEventListener('click', ()=>{
     }
 });
 
-/* FLOATING HEARTS */
+/* FLOATING HEARTS bottom -> top */
 function spawnHeart(){
   let h=document.createElement("div");
   h.className="heart";
   h.innerText="❤️";
   h.style.left=Math.random()*100+"vw";
   h.style.fontSize=(14+Math.random()*14)+"px";
+  h.style.animationDuration=(4+Math.random()*3)+"s";
   document.body.appendChild(h);
-  setTimeout(()=>h.remove(),6000);
+  setTimeout(()=>h.remove(),7000);
 }
 setInterval(spawnHeart,400);
+
+/* soft background hearts */
+function spawnBgHeart(){
+  let h=document.createElement("div");
+  h.className="bg-heart";
+  h.innerText="💖";
+  h.style.left=Math.random()*100+"vw";
+  h.style.bottom="-40px";
+  h.style.animationDuration=(12+Math.random()*6)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),18000);
+}
+setInterval(spawnBgHeart,1200);
+
+/* small sparkles randomly */
+function spawnSparkle(x,y){
+  const s=document.createElement("div");
+  s.className="sparkle";
+  s.innerText="✧";
+  s.style.left=x+"px";
+  s.style.top=y+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),1400);
+}
+setInterval(()=>{
+  const rect=content.getBoundingClientRect();
+  const x=rect.left + Math.random()*rect.width;
+  const y=rect.top + Math.random()*rect.height;
+  spawnSparkle(x,y);
+},800);
 
 /* FLOW SLIDES */
 function yes1(){content.innerHTML=`<div class="emoji">🥰</div><h1>Good choice 😌</h1><p>When was our first kiss? 💋</p><button onclick="wrong()">I forgot 😐</button><button onclick="kiss()">Nov 10 ❤️</button>`;}
@@ -213,50 +319,172 @@ function startMiniCountdown(){
   },1000);
 }
 
-/* TIC TAC TOE */
-let board,current;
+/* TIC TAC TOE – slightly intelligent */
+let board,current,gameOver=false;
+
 function ticTacToe(){
   board=["","","","","","","","",""];
-  current="❌"; startMiniCountdown();
+  current="❌"; 
+  gameOver=false;
+  startMiniCountdown();
   content.innerHTML=`<div class="emoji">🎮💗</div><h1>Tic Tac Toe</h1><p>You ❌ Me ⭕ — winner gets kisses 😌</p><div class="tic">${board.map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}</div><p id="ticMsg">Your turn ❤️</p><button onclick="countdownPage()">Continue ➡️</button>`;
 }
-function play(i){if(board[i]!="")return; board[i]=current; document.getElementsByClassName("cell")[i].innerText=current; if(checkWin(current)||!board.includes("")){document.getElementById("ticMsg").innerText="Cute game 😌💞"; return;} current=current=="❌"?"⭕":"❌"; if(current=="⭕")setTimeout(aiMove,500);}
-function aiMove(){let empty=board.map((v,i)=>v==""?i:null).filter(v=>v!=null); play(empty[Math.floor(Math.random()*empty.length)]);}
-function checkWin(p){const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(c=>c.every(i=>board[i]==p));}
+
+function play(i){
+  if(gameOver) return;
+  if(board[i]!="")return; 
+  board[i]=current; 
+  document.getElementsByClassName("cell")[i].innerText=current; 
+  if(checkWin(current)){
+    document.getElementById("ticMsg").innerText = current==="❌" ? "You win… extra kisses for you 😘" : "I win, I take kisses 💋";
+    gameOver=true;
+    return;
+  }
+  if(!board.includes("")){
+    document.getElementById("ticMsg").innerText="Cute game 😌💞";
+    gameOver=true;
+    return;
+  }
+  current=current=="❌"?"⭕":"❌"; 
+  if(current=="⭕") setTimeout(aiMove,400);
+  else document.getElementById("ticMsg").innerText="Your turn ❤️";
+}
+
+/* simple intelligent AI: win > block > center > corner > random */
+function aiMove(){
+  if(gameOver) return;
+  const ai="⭕";
+  const human="❌";
+
+  // 1. can AI win?
+  let move=findBestLineMove(ai);
+  // 2. can AI block human?
+  if(move===null) move=findBestLineMove(human);
+  // 3. center
+  if(move===null && board[4]==="") move=4;
+  // 4. corners
+  const corners=[0,2,6,8].filter(i=>board[i]=="");
+  if(move===null && corners.length) move = corners[Math.floor(Math.random()*corners.length)];
+  // 5. any side
+  const empties=board.map((v,i)=>v==""?i:null).filter(v=>v!=null);
+  if(move===null && empties.length) move = empties[Math.floor(Math.random()*empties.length)];
+
+  // do move
+  if(move!=null) play(move);
+}
+
+function findBestLineMove(player){
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const line of lines){
+    const vals=line.map(i=>board[i]);
+    const countPlayer=vals.filter(v=>v===player).length;
+    const countEmpty=vals.filter(v=>v==="").length;
+    if(countPlayer===2 && countEmpty===1){
+      return line[vals.indexOf("")];
+    }
+  }
+  return null;
+}
+
+function checkWin(p){
+  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return w.some(c=>c.every(i=>board[i]==p));
+}
 
 /* FULL COUNTDOWN PAGE */
-function countdownPage(){content.innerHTML=`<div class="emoji">🎆💖</div><h1>Waiting for 2026</h1><p id="count">Loading...</p><p>New year, same us, more love ❤️</p><button onclick="forever()">Next 😌</button>`; startCountdown();}
-function startCountdown(){const t=new Date("Jan 1, 2026 00:00:00").getTime(); setInterval(()=>{const d=t-new Date().getTime(); if(d<=0){document.getElementById("count").innerText="🎆 Happy 2026 ❤️"; return;} const days=Math.floor(d/86400000); const hours=Math.floor((d/3600000)%24); const minutes=Math.floor((d/60000)%60); const seconds=Math.floor((d/1000)%60); document.getElementById("count").innerText=`${days}d ${hours}h ${minutes}m ${seconds}s`;},1000);}
+function countdownPage(){
+  content.innerHTML=`<div class="emoji">🎆💖</div><h1>Waiting for 2026</h1><p id="count">Loading...</p><p>New year, same us, more love ❤️</p><button onclick="forever()">Next 😌</button>`;
+  startCountdown();
+}
+function startCountdown(){
+  const t=new Date("Jan 1, 2026 00:00:00").getTime(); 
+  const id=setInterval(()=>{
+    const d=t-new Date().getTime(); 
+    if(d<=0){
+      document.getElementById("count").innerText="🎆 Happy 2026 ❤️"; 
+      clearInterval(id);
+      return;
+    } 
+    const days=Math.floor(d/86400000); 
+    const hours=Math.floor((d/3600000)%24); 
+    const minutes=Math.floor((d/60000)%60); 
+    const seconds=Math.floor((d/1000)%60); 
+    document.getElementById("count").innerText=`${days}d ${hours}h ${minutes}m ${seconds}s`;
+  },1000);
+}
 
 /* FOREVER QUESTION */
-function forever(){content.innerHTML=`<div class="emoji">💍</div><h1>One last question…</h1><p><b>Will you be mine forever?</b></p><button onclick="finalYes()">Yes ❤️</button><button onclick="wrong()">Hmm 🤔</button>`;}
-function finalYes(){content.innerHTML=`<div class="emoji">🎆💖</div><h1>I love you Sampritha</h1><p>Today ❤️ Tomorrow 💫 Forever 💍</p>`;startFireworks();}
+function forever(){
+  content.innerHTML=`<div class="emoji">💍</div><h1>One last question…</h1><p><b>Will you be mine forever?</b></p><button onclick="finalYes()">Yes ❤️</button><button onclick="wrong()">Hmm 🤔</button>`;
+}
+function finalYes(){
+  content.innerHTML=`<div class="emoji">🎆💖</div><h1>I love you Sampritha</h1><p>Today ❤️ Tomorrow 💫 Forever 💍</p>`;
+  startFireworks();
+}
 
-/* FIREWORKS */
+/* FIREWORKS – rainbow burst + falling sparks */
 const canvas=document.getElementById("fireworks"); 
 const ctx=canvas.getContext("2d"); 
 canvas.width=innerWidth; 
 canvas.height=innerHeight; 
 let particles=[];
+let gravity=0.03;
+
+window.addEventListener("resize",()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+});
+
 function startFireworks(){
   setInterval(()=>{
-    for(let i=0;i<80;i++)
-      particles.push({x:canvas.width/2,y:canvas.height/2,dx:(Math.random()-.5)*8,dy:(Math.random()-.5)*8,l:100});
-  },600); 
-  (function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height); 
-    particles.forEach((p,i)=>{
+    const baseX = canvas.width/2 + (Math.random()-0.5)*200;
+    const baseY = canvas.height/2 + (Math.random()-0.5)*120;
+    for(let i=0;i<120;i++){
+      const angle = (Math.PI*2*i)/120;
+      const speed = 2.5+Math.random()*1.8;
+      const hue = Math.floor(360*(i/120));
+      particles.push({
+        x:baseX,
+        y:baseY,
+        dx:Math.cos(angle)*speed,
+        dy:Math.sin(angle)*speed,
+        life:90+Math.random()*40,
+        maxLife:90+Math.random()*40,
+        hue:hue,
+        trail:true
+      });
+    }
+  },700); 
+  animateFireworks();
+}
+
+function animateFireworks(){
+  requestAnimationFrame(animateFireworks);
+  ctx.fillStyle="rgba(0,0,0,0)";
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach((p,i)=>{
+    // rainbow color
+    const alpha = p.life/p.maxLife;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${p.hue},100%,60%,${alpha})`;
+    ctx.fill();
+
+    // falling sparks (like glitter rain)
+    if(Math.random()<0.14){
       ctx.beginPath();
-      ctx.arc(p.x,p.y,2,0,Math.PI*2);
-      ctx.fillStyle="rgba(255,77,109,.8)";
+      ctx.arc(p.x, p.y+3+Math.random()*4, 1.5, 0, Math.PI*2);
+      ctx.fillStyle=`hsla(${p.hue},100%,70%,${alpha*.8})`;
       ctx.fill();
-      p.x+=p.dx;
-      p.y+=p.dy;
-      p.l--;
-      if(p.l<=0)particles.splice(i,1);
-    }); 
-    requestAnimationFrame(animate);
-  })();
+    }
+
+    p.x+=p.dx;
+    p.y+=p.dy;
+    p.dy+=gravity*0.3;
+    p.life--;
+    if(p.life<=0) particles.splice(i,1);
+  });
 }
 </script>
 </body>
