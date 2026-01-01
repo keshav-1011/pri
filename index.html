@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>For Sampritha ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
   margin:0;
@@ -13,667 +14,178 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
-  overflow:hidden;
-  position:relative;
-  transition:background 1.5s ease;
-}
-
-/* subtle pulsing of main card */
-@keyframes cardPulse{
-  0%,100%{transform:scale(1);}
-  50%{transform:scale(1.02);}
 }
 
 .card{
-  background:white;
+  background:#fff;
   border-radius:22px;
-  padding:25px;
+  padding:22px;
   width:90%;
   max-width:420px;
   box-shadow:0 15px 40px rgba(0,0,0,.2);
   text-align:center;
-  z-index:2;
-  position:relative;
-  animation:cardPulse 3.5s ease-in-out infinite;
 }
+
 h1{color:#ff4d6d}
-p{color:#444;font-size:15px}
+p{color:#444}
+
 button{
   margin:8px;
   padding:12px 20px;
   border:none;
   border-radius:25px;
   background:#ff4d6d;
-  color:white;
+  color:#fff;
   font-size:15px;
   cursor:pointer;
-  transition:transform .15s ease, box-shadow .15s ease;
 }
-button:hover{
-  transform:scale(1.05) translateY(-1px);
-  box-shadow:0 6px 14px rgba(0,0,0,.18);
-}
-.emoji{font-size:36px;margin-bottom:10px}
+
 .image-frame{
   width:100%;
   height:260px;
-  background:#fff;
   border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   overflow:hidden;
   margin-top:12px;
+  position:relative;
 }
+
 .image-frame img{
-  max-width:100%;
-  max-height:100%;
+  width:100%;
+  height:100%;
   object-fit:contain;
 }
 
-/* FLOATING HEARTS – from bottom to top */
-.heart{
-  position:fixed;
-  font-size:18px;
-  animation:floatUp 6s linear infinite;
-  z-index:1;
-  bottom:-40px;
-}
-@keyframes floatUp{
-  0%{
-    transform:translateY(0);
-    opacity:0;
-  }
-  10%{opacity:1;}
-  100%{
-    transform:translateY(-110vh);
-    opacity:0;
-  }
-}
-
-/* soft background hearts behind everything */
-.bg-heart{
-  position:fixed;
-  font-size:26px;
-  opacity:.18;
-  animation:bgFloat 16s linear infinite;
-  z-index:0;
-}
-@keyframes bgFloat{
-  0%{transform:translateY(0) translateX(0);}
-  50%{transform:translateY(-40vh) translateX(40px);}
-  100%{transform:translateY(-80vh) translateX(-20px);}
-}
-
-/* surprise emoji pop */
-.surprise-emoji{
-  position:fixed;
-  font-size:40px;
-  z-index:20;
-  pointer-events:none;
-  animation:emojiPop .7s ease-out forwards;
-}
-@keyframes emojiPop{
-  0%{transform:scale(0) translateY(20px);opacity:0;}
-  40%{transform:scale(1.3) translateY(-10px);opacity:1;}
-  100%{transform:scale(0.8) translateY(-40px);opacity:0;}
-}
-
-#miniCountdown{
-  position:fixed;
-  top:12px;
-  right:12px;
-  background:white;
-  border-radius:16px;
-  padding:10px 14px;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
-  font-size:12px;
-  color:#ff4d6d;
-  display:none;
-  z-index:5;
-}
-.tic{
-  display:grid;
-  grid-template-columns:repeat(3,80px);
-  gap:8px;
-  justify-content:center;
-  margin:15px 0;
-}
-.cell{
-  width:80px;
-  height:80px;
-  background:#ffe3ea;
-  border-radius:15px;
-  font-size:36px;
+/* DOTS */
+.dots{
   display:flex;
   justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  transition:background .2s, transform .1s;
+  margin-top:10px;
+  gap:6px;
 }
-.cell:hover{
-  background:#ffc2d0;
-  transform:translateY(-2px);
-}
-canvas{
-  position:fixed;
-  top:0;left:0;
-  pointer-events:none;
-}
-#musicBtn{
-  position:absolute;
-  top:20px;
-  background:white;
-  border:none;
-  font-size:26px;
-  padding:10px 14px;
+
+.dot{
+  width:8px;
+  height:8px;
+  background:#ffd6df;
   border-radius:50%;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
   cursor:pointer;
-  z-index:10;
+  transition:background .3s, transform .3s;
 }
 
-/* UNICORN AROUND CARD */
-#unicorn{
-  position:fixed;
-  font-size:40px;
-  z-index:1;
-  pointer-events:none;
-  animation:unicornJump 8s linear infinite;
-}
-@keyframes unicornJump{
-  0%{transform:translate(-60vw,20vh);}
-  25%{transform:translate(0vw,-5vh);}
-  50%{transform:translate(40vw,15vh);}
-  75%{transform:translate(0vw,35vh);}
-  100%{transform:translate(-60vw,20vh);}
-}
-
-/* little sparkle stars */
-.sparkle{
-  position:fixed;
-  color:#fff;
-  font-size:12px;
-  animation:spark 1.4s ease-out forwards;
-  pointer-events:none;
-}
-@keyframes spark{
-  0%{opacity:1;transform:translateY(0) scale(1);}
-  100%{opacity:0;transform:translateY(-20px) scale(.2);}
-}
-
-/* visualizer canvas */
-#visualizer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100vw;
-  height:60px;
-  pointer-events:none;
-  z-index:3;
-}
-
-/* meteors on pink bg */
-.meteor{
-  position:fixed;
-  width:80px;
-  height:2px;
-  background:linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0));
-  opacity:0.8;
-  transform:rotate(-35deg);
-  pointer-events:none;
-  z-index:0;
-  animation:meteorMove 1.4s linear forwards;
-}
-@keyframes meteorMove{
-  0%{transform:translate(0,0) rotate(-35deg);opacity:0;}
-  10%{opacity:1;}
-  100%{transform:translate(-40vw,40vh) rotate(-35deg);opacity:0;}
-}
-
-/* Night sky for final scene */
-.night-sky{
-  background:radial-gradient(circle at top,#1b1b3a 0%,#050514 60%,#000 100%);
-}
-
-/* stars for name */
-.star-dot{
-  position:fixed;
-  width:2px;
-  height:2px;
-  background:white;
-  border-radius:50%;
-  opacity:0;
-  animation:starBlink 2.5s ease-in-out forwards;
-  z-index:0;
-}
-@keyframes starBlink{
-  0%{opacity:0;}
-  25%{opacity:1;}
-  100%{opacity:0;}
+.dot.active{
+  background:#ff4d6d;
+  transform:scale(1.4);
 }
 </style>
 </head>
+
 <body>
 
-<audio id="bgMusic" loop>
-  <source src="love_song.mp3" type="audio/mpeg">
-</audio>
-<button id="musicBtn">🎵</button>
-
-<!-- Unicorn -->
-<div id="unicorn">🦄</div>
-
-<canvas id="fireworks"></canvas>
-<canvas id="visualizer"></canvas>
-<div id="miniCountdown"></div>
-
 <div class="card" id="content">
-  <div class="emoji">❤️</div>
-  <h1>Hey Sampritha</h1>
-  <p>I made something small… but full of love 🥰</p>
-  <p><b>Do you want to see what I made for us?</b></p>
-  <button onclick="yes1()">Yes 💕</button>
-  <button onclick="no1()">No 🙄</button>
+  <h1>Hey Sampritha ❤️</h1>
+  <p>I made something special for us 🥰</p>
+  <button onclick="photos()">Open Memories 📸</button>
 </div>
 
 <script>
-const content=document.getElementById("content");
-const music = document.getElementById('bgMusic');
-const musicBtn = document.getElementById('musicBtn');
-let isMuted=false;
+const content = document.getElementById("content");
+let slideIndex = 1;
+let totalSlides = 15;
+let slideTimer;
+let startX = 0;
 
-/* MUSIC - mobile-friendly */
-musicBtn.addEventListener('click', ()=>{
-    music.play().then(()=>setupVisualizer()).catch(()=>{});
-    if(isMuted){
-        music.muted=false;
-        isMuted=false;
-        musicBtn.innerText="🎵";
-    } else {
-        music.muted=true;
-        isMuted=true;
-        musicBtn.innerText="🔇";
-    }
-});
-
-/* FLOATING HEARTS bottom -> top */
-function spawnHeart(){
-  let h=document.createElement("div");
-  h.className="heart";
-  h.innerText="❤️";
-  h.style.left=Math.random()*100+"vw";
-  h.style.fontSize=(14+Math.random()*14)+"px";
-  h.style.animationDuration=(4+Math.random()*3)+"s";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),7000);
-}
-setInterval(spawnHeart,400);
-
-/* soft background hearts */
-function spawnBgHeart(){
-  let h=document.createElement("div");
-  h.className="bg-heart";
-  h.innerText="💖";
-  h.style.left=Math.random()*100+"vw";
-  h.style.bottom="-40px";
-  h.style.animationDuration=(12+Math.random()*6)+"s";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),18000);
-}
-setInterval(spawnBgHeart,1200);
-
-/* small sparkles randomly around card */
-function spawnSparkle(x,y){
-  const s=document.createElement("div");
-  s.className="sparkle";
-  s.innerText="✧";
-  s.style.left=x+"px";
-  s.style.top=y+"px";
-  document.body.appendChild(s);
-  setTimeout(()=>s.remove(),1400);
-}
-setInterval(()=>{
-  const rect=content.getBoundingClientRect();
-  const x=rect.left + Math.random()*rect.width;
-  const y=rect.top + Math.random()*rect.height;
-  spawnSparkle(x,y);
-},800);
-
-/* surprise emoji pop */
-function popEmoji(x,y,emoji="😍"){
-  const e=document.createElement("div");
-  e.className="surprise-emoji";
-  e.textContent=emoji;
-  e.style.left=x+"px";
-  e.style.top=y+"px";
-  document.body.appendChild(e);
-  setTimeout(()=>e.remove(),700);
-}
-
-/* FLOW SLIDES */
-function yes1(){
-  content.innerHTML=`<div class="emoji">🥰</div><h1>Good choice 😌</h1><p>When was our first kiss? 💋</p><button onclick="wrong()">I forgot 😐</button><button onclick="kiss()">Nov 10 ❤️</button>`;
-}
-function no1(){
-  content.innerHTML=`<div class="emoji">😤</div><h1>Excuse me??</h1><p>Go back and press YES 😑</p><button onclick="yes1()">Okay okay 😌</button>`;
-}
-function wrong(){
-  content.innerHTML=`<div class="emoji">🤦‍♂️</div><h1>You don’t know me 😤</h1><p>Try again</p><button onclick="yes1()">Retry</button>`;
-}
-function kiss(){
-  const rect=content.getBoundingClientRect();
-  popEmoji(rect.left+rect.width/2, rect.top+40, "😘");
-  content.innerHTML=`<div class="emoji">💋</div><h1>Correct ❤️</h1><p>Nov 10 🎂 — best gift was YOU</p><p><b>What do you find most attractive in me?</b></p><button onclick="wrong()">my hair 😂</button><button onclick="future()">Me ❤️</button>`;
-}
-function future(){
-  const rect=content.getBoundingClientRect();
-  popEmoji(rect.left+rect.width/2, rect.top+40, "🥹");
-  content.innerHTML=`<div class="emoji">🥹</div><h1>Aww…</h1><p><b>Do you see a future with me?</b></p><button onclick="lookHarder()">No 🤔</button><button onclick="photos()">Yes 💍</button>`;
-}
-function lookHarder(){
-  content.innerHTML=`<div class="emoji">👀</div><h1>Look harder.</h1><p>I’m right here holding our future ❤️</p><button onclick="photos()">Okay yes 🥹</button>`;
-}
-
-/* SLIDESHOW */
 function photos(){
-  content.innerHTML=`<div class="emoji">📸</div><h1>Our Memories ❤️</h1>
-  <div class="image-frame">
-    <img id="slideImg" src="photo1.jpeg">
-  </div>
-  <p>Enjoy our moments 🏡</p>
-  <button onclick="ticTacToe()">Play a game 🎮</button>`;
+  content.innerHTML = `
+    <h1>Our Memories ❤️</h1>
 
-  let slideIndex=1; 
-  const totalSlides=15;
-  const img=document.getElementById("slideImg");
-  setInterval(()=>{
-    slideIndex++; 
-    if(slideIndex>totalSlides) slideIndex=1;
-    img.src=`photo${slideIndex}.jpeg`;
-  },4000); 
+    <div class="image-frame" id="frame">
+      <img id="slideImg" src="photo1.jpeg">
+    </div>
+
+    <div class="dots" id="dots"></div>
+
+    <p>Swipe left / right 💕</p>
+    <button onclick="alert('Winner gets kisses 😘')">Play Game 🎮</button>
+  `;
+
+  createDots();
+  startSlideshow();
+  enableSwipe();
 }
 
-/* MINI COUNTDOWN */
-let miniInterval;
-function startMiniCountdown(){
-  const box=document.getElementById("miniCountdown");
-  box.style.display="block";
-  const target=new Date("Jan 1, 2026 00:00:00").getTime();
-  clearInterval(miniInterval);
-  miniInterval=setInterval(()=>{
-    const now=new Date().getTime();
-    const diff=target-now;
-    if(diff<=0){box.innerHTML="🎆 Happy 2026 ❤️";return;}
-    const d=Math.floor(diff/(1000*60*60*24));
-    const h=Math.floor((diff/(1000*60*60))%24);
-    const m=Math.floor((diff/(1000*60))%60);
-    const s=Math.floor((diff/1000)%60);
-    box.innerHTML=`🎆 2026 in<br><b>${d}d ${h}h ${m}m ${s}s</b>`;
-  },1000);
+function startSlideshow(){
+  clearInterval(slideTimer);
+  slideTimer = setInterval(nextSlide, 4000);
 }
 
-/* TIC TAC TOE – slightly intelligent */
-let board,current,gameOver=false;
-
-function ticTacToe(){
-  board=["","","","","","","","",""];
-  current="❌"; 
-  gameOver=false;
-  startMiniCountdown();
-  content.innerHTML=`<div class="emoji">🎮💗</div><h1>Tic Tac Toe</h1><p>You ❌ Me ⭕ — winner gets kisses 😌</p><div class="tic">${board.map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}</div><p id="ticMsg">Your turn ❤️</p><button onclick="countdownPage()">Continue ➡️</button>`;
+function nextSlide(){
+  slideIndex++;
+  if(slideIndex > totalSlides) slideIndex = 1;
+  updateSlide();
 }
 
-function play(i){
-  if(gameOver) return;
-  if(board[i]!="")return; 
-  board[i]=current; 
-  document.getElementsByClassName("cell")[i].innerText=current; 
-  if(checkWin(current)){
-    document.getElementById("ticMsg").innerText = current==="❌" ? "You win… extra kisses for you 😘" : "I win, I take kisses 💋";
-    gameOver=true;
-    return;
+function prevSlide(){
+  slideIndex--;
+  if(slideIndex < 1) slideIndex = totalSlides;
+  updateSlide();
+}
+
+function updateSlide(){
+  document.getElementById("slideImg").src = `photo${slideIndex}.jpeg`;
+  updateDots();
+}
+
+function createDots(){
+  const dots = document.getElementById("dots");
+  dots.innerHTML = "";
+  for(let i=1;i<=totalSlides;i++){
+    const d = document.createElement("div");
+    d.className = "dot";
+    d.onclick = ()=>jumpTo(i);
+    dots.appendChild(d);
   }
-  if(!board.includes("")){
-    document.getElementById("ticMsg").innerText="Cute game 😌💞";
-    gameOver=true;
-    return;
-  }
-  current=current=="❌"?"⭕":"❌"; 
-  if(current=="⭕") setTimeout(aiMove,400);
-  else document.getElementById("ticMsg").innerText="Your turn ❤️";
+  updateDots();
 }
 
-/* simple intelligent AI: win > block > center > corner > random */
-function aiMove(){
-  if(gameOver) return;
-  const ai="⭕";
-  const human="❌";
-
-  // 1. can AI win?
-  let move=findBestLineMove(ai);
-  // 2. can AI block human?
-  if(move===null) move=findBestLineMove(human);
-  // 3. center
-  if(move===null && board[4]==="") move=4;
-  // 4. corners
-  const corners=[0,2,6,8].filter(i=>board[i]=="");
-  if(move===null && corners.length) move = corners[Math.floor(Math.random()*corners.length)];
-  // 5. any side
-  const empties=board.map((v,i)=>v==""?i:null).filter(v=>v!=null);
-  if(move===null && empties.length) move = empties[Math.floor(Math.random()*empties.length)];
-
-  if(move!=null) play(move);
-}
-
-function findBestLineMove(player){
-  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for(const line of lines){
-    const vals=line.map(i=>board[i]);
-    const countPlayer=vals.filter(v=>v===player).length;
-    const countEmpty=vals.filter(v=>v==="").length;
-    if(countPlayer===2 && countEmpty===1){
-      return line[vals.indexOf("")];
-    }
-  }
-  return null;
-}
-
-function checkWin(p){
-  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  return w.some(c=>c.every(i=>board[i]==p));
-}
-
-/* FULL COUNTDOWN PAGE */
-function countdownPage(){
-  content.innerHTML=`<div class="emoji">🎆💖</div><h1>Waiting for 2026</h1><p id="count">Loading...</p><p>New year, same us, more love ❤️</p><button onclick="forever()">Next 😌</button>`;
-  startCountdown();
-}
-function startCountdown(){
-  const t=new Date("Jan 1, 2026 00:00:00").getTime(); 
-  const id=setInterval(()=>{
-    const d=t-new Date().getTime(); 
-    if(d<=0){
-      document.getElementById("count").innerText="🎆 Happy 2026 ❤️"; 
-      clearInterval(id);
-      return;
-    } 
-    const days=Math.floor(d/86400000); 
-    const hours=Math.floor((d/3600000)%24); 
-    const minutes=Math.floor((d/60000)%60); 
-    const seconds=Math.floor((d/1000)%60); 
-    document.getElementById("count").innerText=`${days}d ${hours}h ${minutes}m ${seconds}s`;
-  },1000);
-}
-
-/* FOREVER QUESTION */
-function forever(){
-  const rect=content.getBoundingClientRect();
-  popEmoji(rect.left+rect.width/2, rect.top+40, "💍");
-  content.innerHTML=`<div class="emoji">💍</div><h1>One last question…</h1><p><b>Will you be mine forever?</b></p><button onclick="finalYes()">Yes ❤️</button><button onclick="wrong()">Hmm 🤔</button>`;
-}
-
-/* star name "Sampritha" */
-function drawNameStars(){
-  const points=[
-    // S
-    {x:20,y:20},{x:24,y:20},{x:28,y:22},{x:24,y:24},{x:20,y:26},{x:24,y:28},
-    // a
-    {x:34,y:24},{x:36,y:22},{x:38,y:24},{x:36,y:26},
-    // m
-    {x:44,y:26},{x:44,y:22},{x:46,y:24},{x:48,y:22},{x:48,y:26},
-    // p
-    {x:54,y:26},{x:54,y:22},{x:56,y:22},{x:56,y:24},
-    // r
-    {x:62,y:26},{x:62,y:22},{x:64,y:22},
-    // i
-    {x:70,y:22},{x:70,y:26},
-    // t
-    {x:76,y:22},{x:78,y:22},{x:77,y:24},{x:77,y:26},
-    // h
-    {x:84,y:26},{x:84,y:22},{x:86,y:24},{x:88,y:22},{x:88,y:26},
-    // a
-    {x:94,y:24},{x:96,y:22},{x:98,y:24},{x:96,y:26}
-  ];
-  const w=window.innerWidth;
-  const h=window.innerHeight;
-  points.forEach((p,i)=>{
-    const s=document.createElement("div");
-    s.className="star-dot";
-    s.style.left=(w*(p.x/120))+"px";
-    s.style.top=(h*0.25 + h*(p.y/200))+"px";
-    s.style.animationDelay=(i*0.08)+"s";
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),3500);
+function updateDots(){
+  const allDots = document.querySelectorAll(".dot");
+  allDots.forEach((d,i)=>{
+    d.classList.toggle("active", i+1 === slideIndex);
   });
 }
 
-/* FINAL YES */
-function finalYes(){
-  const rect=content.getBoundingClientRect();
-  popEmoji(rect.left+rect.width/2, rect.top+40, "💖");
-  document.body.classList.add("night-sky");
-  content.innerHTML=`<div class="emoji">🌙💖</div>
-  <h1>I love you Sampritha</h1>
-  <p>Today ❤️ Tomorrow 💫 Forever 💍</p>`;
-  drawNameStars();
-  startFireworks();
+function jumpTo(i){
+  slideIndex = i;
+  updateSlide();
+  startSlideshow();
 }
 
-/* FIREWORKS – rainbow burst + falling sparks */
-const canvas=document.getElementById("fireworks"); 
-const ctx=canvas.getContext("2d"); 
-canvas.width=innerWidth; 
-canvas.height=innerHeight; 
-let particles=[];
-let gravity=0.03;
+/* SWIPE */
+function enableSwipe(){
+  const frame = document.getElementById("frame");
 
-window.addEventListener("resize",()=>{
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
-  visCanvas.width=innerWidth;
-});
+  frame.addEventListener("touchstart", e=>{
+    startX = e.touches[0].clientX;
+  },{passive:true});
 
-function startFireworks(){
-  setInterval(()=>{
-    const baseX = canvas.width/2 + (Math.random()-0.5)*200;
-    const baseY = canvas.height/2 + (Math.random()-0.5)*120;
-    for(let i=0;i<120;i++){
-      const angle = (Math.PI*2*i)/120;
-      const speed = 2.5+Math.random()*1.8;
-      const hue = Math.floor(360*(i/120));
-      particles.push({
-        x:baseX,
-        y:baseY,
-        dx:Math.cos(angle)*speed,
-        dy:Math.sin(angle)*speed,
-        life:90+Math.random()*40,
-        maxLife:90+Math.random()*40,
-        hue:hue
-      });
+  frame.addEventListener("touchend", e=>{
+    let endX = e.changedTouches[0].clientX;
+    let diff = startX - endX;
+
+    if(Math.abs(diff) > 50){
+      clearInterval(slideTimer);
+      diff > 0 ? nextSlide() : prevSlide();
+      startSlideshow();
     }
-  },700); 
-  animateFireworks();
+  },{passive:true});
 }
 
-function animateFireworks(){
-  requestAnimationFrame(animateFireworks);
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  particles.forEach((p,i)=>{
-    const alpha = p.life/p.maxLife;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
-    ctx.fillStyle=`hsla(${p.hue},100%,60%,${alpha})`;
-    ctx.fill();
-
-    // falling sparks
-    if(Math.random()<0.14){
-      ctx.beginPath();
-      ctx.arc(p.x, p.y+3+Math.random()*4, 1.5, 0, Math.PI*2);
-      ctx.fillStyle=`hsla(${p.hue},100%,70%,${alpha*.8})`;
-      ctx.fill();
-    }
-
-    p.x+=p.dx;
-    p.y+=p.dy;
-    p.dy+=gravity*0.3;
-    p.life--;
-    if(p.life<=0) particles.splice(i,1);
-  });
-}
-
-/* MUSIC VISUALIZER BARS */
-const visCanvas=document.getElementById("visualizer");
-const vctx=visCanvas.getContext("2d");
-visCanvas.width=innerWidth;
-visCanvas.height=60;
-
-let audioCtx, analyser, dataArray, sourceNode, visStarted=false;
-
-function setupVisualizer(){
-  if(visStarted) return;
-  visStarted=true;
-  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser();
-  sourceNode = audioCtx.createMediaElementSource(music);
-  sourceNode.connect(analyser);
-  analyser.connect(audioCtx.destination);
-  analyser.fftSize=64;
-  const bufferLength=analyser.frequencyBinCount;
-  dataArray=new Uint8Array(bufferLength);
-  drawBars(bufferLength);
-}
-
-function drawBars(bufferLength){
-  requestAnimationFrame(()=>drawBars(bufferLength));
-  if(!analyser) return;
-  analyser.getByteFrequencyData(dataArray);
-  vctx.clearRect(0,0,visCanvas.width,visCanvas.height);
-  const barWidth = visCanvas.width / bufferLength;
-  for(let i=0;i<bufferLength;i++){
-    const v=dataArray[i]/255;
-    const h= v*visCanvas.height;
-    const x=i*barWidth;
-    const pastelColors=["#ffc6ff","#ffafcc","#bde0fe","#caffbf","#fdffb6"];
-    const c=pastelColors[i%pastelColors.length];
-    vctx.fillStyle=c;
-    vctx.fillRect(x,visCanvas.height-h, barWidth*0.7, h);
-  }
-}
-
-/* METEOR SHOWER (only on pink bg, not night sky) */
-let meteorTimer=setInterval(spawnMeteor,1800);
-
-function spawnMeteor(){
-  if(document.body.classList.contains("night-sky")) return;
-  const m=document.createElement("div");
-  m.className="meteor";
-  m.style.top=(Math.random()*40)+"vh";
-  m.style.left=(60+Math.random()*40)+"vw";
-  document.body.appendChild(m);
-  setTimeout(()=>m.remove(),1500);
+/* PRELOAD IMAGES */
+for(let i=1;i<=15;i++){
+  const img=new Image();
+  img.src=`photo${i}.jpeg`;
 }
 </script>
+
 </body>
 </html>
