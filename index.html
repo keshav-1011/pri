@@ -14,31 +14,39 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
+  overflow:hidden;
+  transition:background 1.5s ease;
 }
 
 .card{
   background:#fff;
   border-radius:22px;
-  padding:22px;
+  padding:25px;
   width:90%;
   max-width:420px;
   box-shadow:0 15px 40px rgba(0,0,0,.2);
   text-align:center;
+  z-index:2;
+  animation:pulse 3.5s infinite;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.02)}
 }
 
 h1{color:#ff4d6d}
 p{color:#444}
-
 button{
   margin:8px;
   padding:12px 20px;
   border:none;
   border-radius:25px;
   background:#ff4d6d;
-  color:#fff;
+  color:white;
   font-size:15px;
   cursor:pointer;
 }
+.emoji{font-size:36px}
 
 .image-frame{
   width:100%;
@@ -48,7 +56,6 @@ button{
   margin-top:12px;
   position:relative;
 }
-
 .image-frame img{
   width:100%;
   height:100%;
@@ -59,133 +66,226 @@ button{
 .dots{
   display:flex;
   justify-content:center;
-  margin-top:10px;
   gap:6px;
+  margin-top:10px;
 }
-
 .dot{
   width:8px;
   height:8px;
-  background:#ffd6df;
   border-radius:50%;
+  background:#ffd6df;
   cursor:pointer;
-  transition:background .3s, transform .3s;
+  transition:.3s;
 }
-
 .dot.active{
   background:#ff4d6d;
-  transform:scale(1.4);
+  transform:scale(1.5);
+}
+
+/* hearts */
+.heart{
+  position:fixed;
+  bottom:-40px;
+  font-size:18px;
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  0%{opacity:0;transform:translateY(0)}
+  10%{opacity:1}
+  100%{opacity:0;transform:translateY(-110vh)}
+}
+
+/* music */
+#musicBtn{
+  position:fixed;
+  top:15px;
+  right:15px;
+  font-size:24px;
+  border:none;
+  background:white;
+  border-radius:50%;
+  padding:10px;
+  cursor:pointer;
+}
+
+/* tic tac toe */
+.tic{
+  display:grid;
+  grid-template-columns:repeat(3,80px);
+  gap:8px;
+  justify-content:center;
+}
+.cell{
+  width:80px;height:80px;
+  background:#ffe3ea;
+  border-radius:15px;
+  font-size:36px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+}
+
+/* night */
+.night-sky{
+  background:radial-gradient(circle,#1b1b3a,#000);
 }
 </style>
 </head>
 
 <body>
 
+<audio id="bgMusic" loop>
+  <source src="love_song.mp3" type="audio/mpeg">
+</audio>
+<button id="musicBtn">🎵</button>
+
 <div class="card" id="content">
-  <h1>Hey Sampritha ❤️</h1>
-  <p>I made something special for us 🥰</p>
-  <button onclick="photos()">Open Memories 📸</button>
+  <div class="emoji">❤️</div>
+  <h1>Hey Sampritha</h1>
+  <p>I made something full of love 🥰</p>
+  <button onclick="photos()">Start 💕</button>
 </div>
 
 <script>
-const content = document.getElementById("content");
-let slideIndex = 1;
-let totalSlides = 15;
-let slideTimer;
-let startX = 0;
+/* MUSIC */
+const music=document.getElementById("bgMusic");
+const musicBtn=document.getElementById("musicBtn");
+let muted=false;
+musicBtn.onclick=()=>{
+  music.play().catch(()=>{});
+  muted=!muted;
+  music.muted=muted;
+  musicBtn.innerText=muted?"🔇":"🎵";
+};
+
+/* HEARTS */
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerText="❤️";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=(14+Math.random()*14)+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},400);
+
+/* SLIDESHOW */
+const content=document.getElementById("content");
+let slideIndex=1;
+const totalSlides=15;
+let timer,startX=0;
 
 function photos(){
-  content.innerHTML = `
+  content.innerHTML=`
+    <div class="emoji">📸</div>
     <h1>Our Memories ❤️</h1>
-
     <div class="image-frame" id="frame">
       <img id="slideImg" src="photo1.jpeg">
     </div>
-
     <div class="dots" id="dots"></div>
-
     <p>Swipe left / right 💕</p>
-    <button onclick="alert('Winner gets kisses 😘')">Play Game 🎮</button>
+    <button onclick="ticTacToe()">Play Game 🎮</button>
   `;
-
   createDots();
-  startSlideshow();
-  enableSwipe();
+  start();
+  swipe();
 }
 
-function startSlideshow(){
-  clearInterval(slideTimer);
-  slideTimer = setInterval(nextSlide, 4000);
+function start(){
+  clearInterval(timer);
+  timer=setInterval(next,4000);
 }
-
-function nextSlide(){
-  slideIndex++;
-  if(slideIndex > totalSlides) slideIndex = 1;
-  updateSlide();
+function next(){
+  slideIndex=slideIndex%totalSlides+1;
+  update();
 }
-
-function prevSlide(){
-  slideIndex--;
-  if(slideIndex < 1) slideIndex = totalSlides;
-  updateSlide();
+function prev(){
+  slideIndex=slideIndex-1||totalSlides;
+  update();
 }
-
-function updateSlide(){
-  document.getElementById("slideImg").src = `photo${slideIndex}.jpeg`;
-  updateDots();
-}
-
-function createDots(){
-  const dots = document.getElementById("dots");
-  dots.innerHTML = "";
-  for(let i=1;i<=totalSlides;i++){
-    const d = document.createElement("div");
-    d.className = "dot";
-    d.onclick = ()=>jumpTo(i);
-    dots.appendChild(d);
-  }
-  updateDots();
-}
-
-function updateDots(){
-  const allDots = document.querySelectorAll(".dot");
-  allDots.forEach((d,i)=>{
-    d.classList.toggle("active", i+1 === slideIndex);
+function update(){
+  document.getElementById("slideImg").src=`photo${slideIndex}.jpeg`;
+  document.querySelectorAll(".dot").forEach((d,i)=>{
+    d.classList.toggle("active",i+1===slideIndex);
   });
 }
 
-function jumpTo(i){
-  slideIndex = i;
-  updateSlide();
-  startSlideshow();
+/* DOTS */
+function createDots(){
+  const d=document.getElementById("dots");
+  d.innerHTML="";
+  for(let i=1;i<=totalSlides;i++){
+    let dot=document.createElement("div");
+    dot.className="dot";
+    dot.onclick=()=>{slideIndex=i;update();start();}
+    d.appendChild(dot);
+  }
+  update();
 }
 
 /* SWIPE */
-function enableSwipe(){
-  const frame = document.getElementById("frame");
-
-  frame.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
-  },{passive:true});
-
-  frame.addEventListener("touchend", e=>{
-    let endX = e.changedTouches[0].clientX;
-    let diff = startX - endX;
-
-    if(Math.abs(diff) > 50){
-      clearInterval(slideTimer);
-      diff > 0 ? nextSlide() : prevSlide();
-      startSlideshow();
+function swipe(){
+  const f=document.getElementById("frame");
+  f.addEventListener("touchstart",e=>startX=e.touches[0].clientX,{passive:true});
+  f.addEventListener("touchend",e=>{
+    let dx=startX-e.changedTouches[0].clientX;
+    if(Math.abs(dx)>50){
+      clearInterval(timer);
+      dx>0?next():prev();
+      start();
     }
   },{passive:true});
 }
 
-/* PRELOAD IMAGES */
+/* TIC TAC TOE */
+let board,turn,over;
+function ticTacToe(){
+  board=["","","","","","","","",""];
+  turn="❌"; over=false;
+  content.innerHTML=`
+    <h1>Tic Tac Toe 💗</h1>
+    <div class="tic">
+      ${board.map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}
+    </div>
+    <p id="msg">Your turn ❤️</p>
+    <button onclick="final()">Continue ➡️</button>
+  `;
+}
+function play(i){
+  if(over||board[i])return;
+  board[i]=turn;
+  document.getElementsByClassName("cell")[i].innerText=turn;
+  if(win(turn)){msg(turn+" wins 😘");over=true;return;}
+  if(!board.includes("")){msg("Draw 😌");over=true;return;}
+  turn=turn==="❌"?"⭕":"❌";
+  if(turn==="⭕")setTimeout(ai,400);
+}
+function ai(){
+  let empty=board.map((v,i)=>v==""?i:null).filter(v=>v!=null);
+  play(empty[Math.floor(Math.random()*empty.length)]);
+}
+function win(p){
+  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return w.some(a=>a.every(i=>board[i]==p));
+}
+function msg(t){document.getElementById("msg").innerText=t}
+
+/* FINAL */
+function final(){
+  document.body.classList.add("night-sky");
+  content.innerHTML=`
+    <div class="emoji">💍</div>
+    <h1>I love you Sampritha</h1>
+    <p>Today ❤️ Tomorrow 💫 Forever 💍</p>
+  `;
+}
+
+/* PRELOAD */
 for(let i=1;i<=15;i++){
-  const img=new Image();
-  img.src=`photo${i}.jpeg`;
+  let im=new Image();
+  im.src=`photo${i}.jpeg`;
 }
 </script>
-
 </body>
 </html>
