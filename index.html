@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>For Sampritha ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body{
   margin:0;
@@ -15,11 +14,18 @@ body{
   align-items:center;
   height:100vh;
   overflow:hidden;
+  position:relative;
   transition:background 1.5s ease;
 }
 
+/* subtle pulsing of main card */
+@keyframes cardPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.02);}
+}
+
 .card{
-  background:#fff;
+  background:white;
   border-radius:22px;
   padding:25px;
   width:90%;
@@ -27,15 +33,11 @@ body{
   box-shadow:0 15px 40px rgba(0,0,0,.2);
   text-align:center;
   z-index:2;
-  animation:pulse 3.5s infinite;
+  position:relative;
+  animation:cardPulse 3.5s ease-in-out infinite;
 }
-@keyframes pulse{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.02)}
-}
-
 h1{color:#ff4d6d}
-p{color:#444}
+p{color:#444;font-size:15px}
 button{
   margin:8px;
   padding:12px 20px;
@@ -45,75 +47,79 @@ button{
   color:white;
   font-size:15px;
   cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
 }
-.emoji{font-size:36px}
-
+button:hover{
+  transform:scale(1.05) translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,.18);
+}
+.emoji{font-size:36px;margin-bottom:10px}
 .image-frame{
   width:100%;
   height:260px;
+  background:#fff;
   border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   overflow:hidden;
   margin-top:12px;
 }
 .image-frame img{
-  width:100%;
-  height:100%;
+  max-width:100%;
+  max-height:100%;
   object-fit:contain;
 }
 
-/* dots */
-.dots{
-  display:flex;
-  justify-content:center;
-  gap:6px;
-  margin-top:10px;
-}
-.dot{
-  width:8px;height:8px;
-  border-radius:50%;
-  background:#ffd6df;
-  cursor:pointer;
-}
-.dot.active{
-  background:#ff4d6d;
-  transform:scale(1.5);
-}
-
-/* hearts */
+/* FLOATING HEARTS */
 .heart{
   position:fixed;
-  bottom:-40px;
   font-size:18px;
-  animation:float 6s linear infinite;
+  animation:floatUp 6s linear infinite;
+  z-index:1;
+  bottom:-40px;
 }
-@keyframes float{
-  0%{opacity:0;transform:translateY(0)}
-  10%{opacity:1}
-  100%{opacity:0;transform:translateY(-110vh)}
+@keyframes floatUp{
+  0%{transform:translateY(0);opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translateY(-110vh);opacity:0;}
 }
 
-/* music */
-#musicBtn{
+.bg-heart{
   position:fixed;
-  top:15px;
-  right:15px;
-  font-size:24px;
-  border:none;
-  background:white;
-  border-radius:50%;
-  padding:10px;
-  cursor:pointer;
+  font-size:26px;
+  opacity:.18;
+  animation:bgFloat 16s linear infinite;
+  z-index:0;
+}
+@keyframes bgFloat{
+  0%{transform:translateY(0);}
+  100%{transform:translateY(-80vh);}
 }
 
-/* tic tac toe */
+#musicBtn{
+  position:absolute;
+  top:20px;
+  background:white;
+  border:none;
+  font-size:26px;
+  padding:10px 14px;
+  border-radius:50%;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+  cursor:pointer;
+  z-index:10;
+}
+
 .tic{
   display:grid;
   grid-template-columns:repeat(3,80px);
   gap:8px;
   justify-content:center;
+  margin:15px 0;
 }
 .cell{
-  width:80px;height:80px;
+  width:80px;
+  height:80px;
   background:#ffe3ea;
   border-radius:15px;
   font-size:36px;
@@ -123,9 +129,14 @@ button{
   cursor:pointer;
 }
 
-/* night */
+canvas{
+  position:fixed;
+  top:0;left:0;
+  pointer-events:none;
+}
+
 .night-sky{
-  background:radial-gradient(circle,#1b1b3a,#000);
+  background:radial-gradient(circle at top,#1b1b3a,#000);
 }
 </style>
 </head>
@@ -140,24 +151,26 @@ button{
 <div class="card" id="content">
   <div class="emoji">❤️</div>
   <h1>Hey Sampritha</h1>
-  <p>I made something full of love 🥰</p>
-  <button onclick="photos()">Start 💕</button>
+  <p>I made something small… but full of love 🥰</p>
+  <p><b>Do you want to see what I made for us?</b></p>
+  <button onclick="yes1()">Yes 💕</button>
+  <button onclick="no1()">No 🙄</button>
 </div>
 
 <script>
-/* MUSIC */
+const content=document.getElementById("content");
 const music=document.getElementById("bgMusic");
 const musicBtn=document.getElementById("musicBtn");
 let muted=false;
 
 musicBtn.onclick=()=>{
-  if(music.paused) music.play().catch(()=>{});
+  music.play().catch(()=>{});
   muted=!muted;
   music.muted=muted;
   musicBtn.innerText=muted?"🔇":"🎵";
 };
 
-/* HEARTS */
+/* hearts */
 setInterval(()=>{
   let h=document.createElement("div");
   h.className="heart";
@@ -168,113 +181,96 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),6000);
 },400);
 
-/* SLIDESHOW */
-const content=document.getElementById("content");
-let slideIndex=1;
-const totalSlides=15;
-let timer,startX=0;
+/* flow */
+function yes1(){
+  content.innerHTML=`<div class="emoji">🥰</div><h1>Good choice 😌</h1>
+  <p>When was our first kiss? 💋</p>
+  <button onclick="wrong()">I forgot 😐</button>
+  <button onclick="kiss()">Nov 10 ❤️</button>`;
+}
+function no1(){
+  content.innerHTML=`<div class="emoji">😤</div><h1>Excuse me??</h1>
+  <p>Go back and press YES 😑</p>
+  <button onclick="yes1()">Okay okay 😌</button>`;
+}
+function wrong(){
+  content.innerHTML=`<div class="emoji">🤦‍♂️</div><h1>You don’t know me 😤</h1>
+  <button onclick="yes1()">Retry</button>`;
+}
+function kiss(){
+  content.innerHTML=`<div class="emoji">💋</div><h1>Correct ❤️</h1>
+  <p>Best gift was YOU</p>
+  <button onclick="photos()">Continue 💍</button>`;
+}
 
+/* SLIDESHOW — FIXED */
 function photos(){
-  music.play().catch(()=>{});
-  content.innerHTML=`
-    <div class="emoji">📸</div>
-    <h1>Our Memories ❤️</h1>
-    <div class="image-frame" id="frame">
-      <img id="slideImg">
-    </div>
-    <div class="dots" id="dots"></div>
-    <p>Swipe left / right 💕</p>
-    <button onclick="ticTacToe()">Play Game 🎮</button>
-  `;
-  createDots();
-  loadImage(slideIndex);
-  swipe();
-}
+  content.innerHTML=`<div class="emoji">📸</div><h1>Our Memories ❤️</h1>
+  <div class="image-frame">
+    <img id="slideImg">
+  </div>
+  <p>Enjoy our moments 🏡</p>
+  <button onclick="ticTacToe()">Play a game 🎮</button>`;
 
-/* IMAGE LOADER (FIXED FOR CASE + JPG/JPEG) */
-function loadImage(n){
+  let slideIndex=1;
+  const totalSlides=15;
   const img=document.getElementById("slideImg");
-  const variants=[
-    `photo${n}.jpeg`,`photo${n}.jpg`,
-    `Photo${n}.jpeg`,`Photo${n}.jpg`,`Photo${n}.JPG`
-  ];
-  let i=0;
-  function tryNext(){
-    if(i>=variants.length) return;
-    img.src=variants[i++];
-    img.onerror=tryNext;
-  }
-  tryNext();
-  document.querySelectorAll(".dot").forEach((d,i)=>{
-    d.classList.toggle("active",i+1===n);
-  });
-}
 
-/* DOTS */
-function createDots(){
-  const d=document.getElementById("dots");
-  d.innerHTML="";
-  for(let i=1;i<=totalSlides;i++){
-    let dot=document.createElement("div");
-    dot.className="dot";
-    dot.onclick=()=>{slideIndex=i;loadImage(slideIndex);}
-    d.appendChild(dot);
-  }
-}
-
-/* SWIPE */
-function swipe(){
-  const f=document.getElementById("frame");
-  f.addEventListener("touchstart",e=>startX=e.touches[0].clientX,{passive:true});
-  f.addEventListener("touchend",e=>{
-    let dx=startX-e.changedTouches[0].clientX;
-    if(Math.abs(dx)>50){
-      slideIndex = dx>0 ? slideIndex%totalSlides+1 : (slideIndex-1||totalSlides);
-      loadImage(slideIndex);
+  function loadImage(n){
+    const variants=[
+      \`photo\${n}.jpeg\`,
+      \`photo\${n}.jpg\`,
+      \`Photo\${n}.jpeg\`,
+      \`Photo\${n}.jpg\`,
+      \`Photo\${n}.JPG\`
+    ];
+    let i=0;
+    function tryNext(){
+      if(i>=variants.length) return;
+      img.src=variants[i++];
+      img.onerror=tryNext;
     }
-  },{passive:true});
+    tryNext();
+  }
+
+  loadImage(slideIndex);
+
+  setInterval(()=>{
+    slideIndex++;
+    if(slideIndex>totalSlides) slideIndex=1;
+    loadImage(slideIndex);
+  },4000);
 }
 
 /* TIC TAC TOE */
-let board,turn,over;
-
+let board,current,over=false;
 function ticTacToe(){
   board=["","","","","","","","",""];
-  turn="❌"; over=false;
-  content.innerHTML=`
-    <h1>Tic Tac Toe 💗</h1>
-    <div class="tic">
-      ${board.map((_,i)=>`<div class="cell" onclick="play(${i})"></div>`).join("")}
-    </div>
-    <p id="msg">Your turn ❤️</p>
-    <button onclick="ticTacToe()">Replay 🔁</button>
-    <button onclick="final()">Next ➡️</button>
-  `;
+  current="❌"; over=false;
+  content.innerHTML=\`<h1>Tic Tac Toe 💗</h1>
+  <div class="tic">\${board.map((_,i)=>\`<div class="cell" onclick="play(\${i})"></div>\`).join("")}</div>
+  <p id="msg">Your turn ❤️</p>
+  <button onclick="final()">Continue ➡️</button>\`;
 }
-
 function play(i){
-  if(over||board[i]) return;
-  board[i]=turn;
-  document.querySelectorAll(".cell")[i].innerText=turn;
-  if(win(turn)){msg(turn+" wins 😘");over=true;return;}
-  if(!board.includes("")){msg("Draw 😌");over=true;return;}
-  turn=turn==="❌"?"⭕":"❌";
+  if(over||board[i])return;
+  board[i]=current;
+  document.getElementsByClassName("cell")[i].innerText=current;
+  if(checkWin(current)){msg(current+" wins 😘");over=true;return;}
+  current=current==="❌"?"⭕":"❌";
 }
-
-function win(p){
+function checkWin(p){
   const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  return w.some(a=>a.every(i=>board[i]==p));
+  return w.some(c=>c.every(i=>board[i]==p));
 }
 function msg(t){document.getElementById("msg").innerText=t}
 
 /* FINAL */
 function final(){
   document.body.classList.add("night-sky");
-  content.innerHTML=`
-    <div class="emoji">💍</div>
-    <h1>I love you Sampritha</h1>
-    <p>Today ❤️ Tomorrow 💫 Forever 💍</p>
-  `;
+  content.innerHTML=\`<div class="emoji">💍</div>
+  <h1>I love you Sampritha</h1>
+  <p>Today ❤️ Tomorrow 💫 Forever 💍</p>\`;
 }
 </script>
 </body>
